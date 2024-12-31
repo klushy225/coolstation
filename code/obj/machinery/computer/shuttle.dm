@@ -113,7 +113,7 @@
 		dat += "Moving"
 	else
 		dat += "<a href='byond://?src=\ref[src];send=1'>Call Client</a><BR><BR>"
-
+		dat += "<a href='byond://?src=\ref[src];test=1'>Test generation</a><BR><BR>"
 	user.Browse(dat, "window=shuttle")
 	onclose(user, "shuttle")
 	return
@@ -131,6 +131,9 @@
 			src.remove_dialog(usr)
 			usr.Browse(null, "window=shuttle")
 
+		if(href_list["test"])
+			src.test()
+
 	src.add_fingerprint(usr)
 	src.updateUsrDialog()
 	return
@@ -142,6 +145,9 @@
 			C.visible_message("<span class='alert'>The client ship has been notified of vacancy, and will arrive shortly!</span>")
 		SPAWN_DBG(10 SECONDS)
 			call_client()
+/obj/machinery/computer/shipyard_control/proc/test()
+	clear_area(locate(/area/shuttle/bayou/shipyard),null,/obj/landmark)
+	buildRandomShips()
 
 /obj/machinery/computer/shipyard_control/proc/call_client()
 
@@ -150,13 +156,13 @@
 		buildRandomShips()
 		var/area/start_location = locate(/area/shuttle/bayou/stagearea)
 		var/area/end_location = locate(/area/shuttle/bayou/shipyard)
-		start_location.move_contents_to(end_location)
+		start_location.move_contents_to(end_location,consider_filler_as_empty = TRUE)
 		shipyardship_location = 1
 	else
 		if(shipyardship_location == 1)
 			var/area/start_location = locate(/area/shuttle/bayou/shipyard)
 			var/area/end_location = locate(/area/shuttle/bayou/stagearea)
-			start_location.move_contents_to(end_location)
+			start_location.move_contents_to(end_location,consider_filler_as_empty = TRUE)
 			shipyardship_location = 0
 
 	for(var/obj/machinery/computer/shipyard_control/C in machine_registry[MACHINES_SHUTTLECOMPS])
